@@ -1,0 +1,5 @@
+DROP DATABASE IF EXISTS ncnews;
+CREATE DATABASE ncnews;
+
+DROP DATABASE IF EXISTS ncnews_test;
+CREATE DATABASE ncnews_test;
