@@ -51,22 +51,12 @@ exports.seed = (knex, Promise) => {
     })
     .then(() => {
       const formattedArticles = formatTimestampedData(articlesData);
-      console.log(formattedArticles);
       return knex("articles")
         .insert(formattedArticles)
         .returning("*");
-
-      // .then(ownerRows => {
-      // const ownerIdRef = createOwnerRef(ownerRows);
-      // const formattedShops = formatShops(shopData, ownerIdRef);
-      // return connection
-      //   .insert(formattedShops)
-      //   .into("shops")
-      //   .returning("*");
     })
     .then(articleRows => {
       const articleIdRef = createArticleRef(articleRows);
-      console.log(articleIdRef);
       const formattedComments = formatComments(commentsData, articleIdRef);
       return knex("comments")
         .insert(formattedComments)

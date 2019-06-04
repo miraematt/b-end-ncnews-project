@@ -180,7 +180,7 @@ describe("createArticleRef", () => {
   });
 });
 
-describe.only("formatComments", () => {
+describe("formatComments", () => {
   it("returns an empty array when passed an empty array", () => {
     const comments = [];
     const ref = {};
