@@ -1,7 +1,11 @@
 process.env.NODE_ENV = "test";
 
+const chai = require("chai");
 const { expect } = require("chai");
+
+const chaiSorted = require("chai-sorted");
 const request = require("supertest");
+chai.use(chaiSorted);
 
 const app = require("../app");
 const connection = require("../db/connection");
@@ -242,12 +246,77 @@ describe.only("/", () => {
             });
         });
       });
-      describe("/comments - GET", () => {
+      describe.only("/comments - GET", () => {
         it("GET status:200 it responds with an array of comments for the given article_id", () => {
           return request(app)
             .get("/api/articles/1/comments")
-            .expect(200);
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.an("array");
+              expect(body.comments[0]).to.contain.keys(
+                "comment_id",
+                "author",
+                "votes",
+                "created_at",
+                "body"
+              );
+              expect(body.comments[0]).to.not.contain.keys("article_id");
+            });
         });
+        it("PATCH status:405 Method Not Allowed for all methods that we cannot use", () => {
+          return request(app)
+            .patch("/api/articles/1/comments")
+            .expect(405)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Method Not Allowed");
+            });
+        });
+
+        it("GET status:404 Not Found for article_id that does not exist", () => {
+          return request(app)
+            .get("/api/articles/1234567890/comments")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal(
+                "No comments found for this article id"
+              );
+            });
+        });
+        it("GET status:400 Bad Request for article_id that is not a positive integer", () => {
+          return request(app)
+            .get("/api/articles/hello/comments")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Bad Request");
+            });
+        });
+        it("GET status 200 comments are sorted in ascending created order by default", () => {
+          return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body }) => {
+              console.log(body.comments);
+              expect(body.comments).to.be.sortedBy("created_at");
+            });
+        });
+        it("GET status 200 comments are sorted by any column when passed a valid column as a url sort_by query", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=votes")
+            .expect(200)
+            .then(({ body }) => {
+              console.log(body.comments);
+              expect(body.comments).to.be.sortedBy("votes");
+            });
+        });
+        // it.only("GET status 200 comments are sorted by any column when passed a valid column as a url sort_by query", () => {
+        //   return request(app)
+        //     .get("/api/articles/1/comments?sort_by=votes")
+        //     .expect(200)
+        //     .then(({ body }) => {
+        //       console.log(body.comments);
+        //       expect(body.comments).to.be.sortedBy("votes");
+        //     });
+        // });
       });
     });
   });

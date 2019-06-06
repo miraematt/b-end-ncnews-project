@@ -52,21 +52,21 @@ exports.postCommentOnArticle = (req, res, next) => {
       res.status(201).send({ comment });
     })
     .catch(next);
+};
 
-  exports.sendCommmentsByArticle = (req, res, next) => {
-    console.log("Whdzup!");
-    res.status(200).send({ msg: "Hello there!!!" });
-    const { article_id } = req.params;
-    fetchCommentsByArticle(article_id)
-      .then(comments => {
-        // if (!user) {
-        //   return Promise.reject({
-        //     status: 404,
-        //     msg: "No user found for this username"
-        //   });
-        // }
-        // res.status(200).send({ comments });
-      })
-      .catch(next);
-  };
+exports.sendCommentsByArticle = (req, res, next) => {
+  // res.send("All okay from article router ");
+  const { article_id } = req.params;
+  fetchCommentsByArticle(article_id, req.query)
+    .then(comments => {
+      comments.map(comment => delete comment.article_id);
+      if (comments.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "No comments found for this article id"
+        });
+      }
+      res.status(200).send({ comments });
+    })
+    .catch(next);
 };

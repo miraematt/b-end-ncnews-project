@@ -41,6 +41,8 @@ exports.insertComment = comment => {
     .returning("*");
 };
 
-exports.fetchCommentsByArticle = article_id => {
-  return connection("comments").where("article_id", article_id);
+exports.fetchCommentsByArticle = (article_id, { sort_by }) => {
+  return connection("comments")
+    .where("article_id", article_id)
+    .orderBy(sort_by || "created_at");
 };

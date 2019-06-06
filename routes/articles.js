@@ -16,7 +16,7 @@ articlesRouter
 
 articlesRouter
   .route("/:article_id/comments")
-  .get((req, res) => res.send({ ok: true }))
+  .get(sendCommentsByArticle)
   .post(postCommentOnArticle)
   .all(methodNotAllowed);
 
