@@ -246,7 +246,7 @@ describe.only("/", () => {
             });
         });
       });
-      describe.only("/comments - GET", () => {
+      describe("/comments - GET", () => {
         it("GET status:200 it responds with an array of comments for the given article_id", () => {
           return request(app)
             .get("/api/articles/1/comments")
@@ -290,13 +290,12 @@ describe.only("/", () => {
               expect(body.msg).to.equal("Bad Request");
             });
         });
-        it("GET status 200 comments are sorted in ascending created order by default", () => {
+        it("GET status 200 comments are sorted in descending created order by default", () => {
           return request(app)
             .get("/api/articles/1/comments")
             .expect(200)
             .then(({ body }) => {
-              console.log(body.comments);
-              expect(body.comments).to.be.sortedBy("created_at");
+              expect(body.comments).to.be.descendingBy("created_at");
             });
         });
         it("GET status 200 comments are sorted by any column when passed a valid column as a url sort_by query", () => {
@@ -304,19 +303,175 @@ describe.only("/", () => {
             .get("/api/articles/1/comments?sort_by=votes")
             .expect(200)
             .then(({ body }) => {
-              console.log(body.comments);
-              expect(body.comments).to.be.sortedBy("votes");
+              expect(body.comments).to.be.descendingBy("votes");
             });
         });
-        // it.only("GET status 200 comments are sorted by any column when passed a valid column as a url sort_by query", () => {
-        //   return request(app)
-        //     .get("/api/articles/1/comments?sort_by=votes")
-        //     .expect(200)
-        //     .then(({ body }) => {
-        //       console.log(body.comments);
-        //       expect(body.comments).to.be.sortedBy("votes");
-        //     });
-        // });
+        it("GET status 200 comments are sorted by any column when passed a valid column as a url sort_by query and an order query", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=votes&order=asc")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.ascendingBy("votes");
+            });
+        });
+        it("GET status:400 Bad Request for sort_by query that is not a valid column", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=recommendations")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Bad Request");
+            });
+        });
+        it("GET status:400 Bad Request for sort_by query that is empty", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal(
+                "Sort property or order property have been chosen but invalid values have been given"
+              );
+            });
+        });
+        it("GET status:400 Bad Request for sort_by query that is empty", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=votes&order=")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal(
+                "Sort property or order property have been chosen but invalid values have been given"
+              );
+            });
+        });
+        it("GET status:400 Bad Request for order query that is invalid", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=votes&order=hello")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal(
+                "Sort property or order property have been chosen but invalid values have been given"
+              );
+            });
+        });
+      });
+    });
+    describe("/articles", () => {
+      it("GET status:200 it responds with an array of articles, each article having the correct properties", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.an("array");
+            expect(body.articles[0]).to.contain.keys(
+              "article_id",
+              "title",
+              "votes",
+              "topic",
+              "author",
+              "created_at",
+              "comment_count"
+            );
+            expect(body.articles[0]).to.not.contain.keys("body");
+          });
+      });
+      it("POST status:405 Method Not Allowed for all methods that we cannot use", () => {
+        return request(app)
+          .post("/api/articles")
+          .expect(405)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      it("GET status 200 articles are sorted in descending created order by default", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.descendingBy("created_at");
+          });
+      });
+      it("GET status 200 comments are sorted by any column when passed a valid column as a url sort_by query", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.descendingBy("votes");
+          });
+      });
+      it("GET status 200 comments are sorted by any column when passed a valid column as a url sort_by query and an order query", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes&order=asc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.ascendingBy("votes");
+          });
+      });
+      it("GET status:400 Bad Request for sort_by query that is not a valid column", () => {
+        return request(app)
+          .get("/api/articles?sort_by=recommendations")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad Request");
+          });
+      });
+      it("GET status:400 Bad Request for sort_by query that is empty", () => {
+        return request(app)
+          .get("/api/articles?sort_by=")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal(
+              "Sort property or order property have been chosen but invalid values have been given"
+            );
+          });
+      });
+      it("GET status:400 Bad Request for sort_by query that is empty", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes&order=")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal(
+              "Sort property or order property have been chosen but invalid values have been given"
+            );
+          });
+      });
+      it("GET status:400 Bad Request for order query that is invalid", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes&order=hello")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal(
+              "Sort property or order property have been chosen but invalid values have been given"
+            );
+          });
+      });
+      it("GET status:200 filters the results when given an author username as a query", () => {
+        return request(app)
+          .get("/api/articles?author=butter_bridge")
+          .expect(200)
+          .then(({ body }) => {
+            const articlesArray = body.articles;
+            let count = 0;
+            for (let i = 0; i < articlesArray.length; i++) {
+              if (articlesArray[i].author === "butter_bridge") {
+                count++;
+              }
+            }
+            expect(body.articles.length).to.equal(count);
+          });
+      });
+      it("GET status:200 filters the results when given a topic value as a query", () => {
+        return request(app)
+          .get("/api/articles?topic=cats")
+          .expect(200)
+          .then(({ body }) => {
+            const articlesArray = body.articles;
+            let count = 0;
+            for (let i = 0; i < articlesArray.length; i++) {
+              if (articlesArray[i].topic === "cats") {
+                count++;
+              }
+            }
+            expect(body.articles.length).to.equal(count);
+          });
       });
     });
   });

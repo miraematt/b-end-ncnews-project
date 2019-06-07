@@ -41,8 +41,32 @@ exports.insertComment = comment => {
     .returning("*");
 };
 
-exports.fetchCommentsByArticle = (article_id, { sort_by }) => {
+exports.fetchCommentsByArticle = (article_id, { sort_by, order }) => {
   return connection("comments")
     .where("article_id", article_id)
-    .orderBy(sort_by || "created_at");
+    .orderBy(sort_by || "created_at", order || "desc");
+};
+
+exports.fetchAllArticles = ({ sort_by, order, author, topic }) => {
+  return connection
+    .select("articles.*")
+    .count({ comment_count: "title" })
+    .from("articles")
+
+    .leftJoin("comments", "comments.article_id", "articles.article_id")
+    .groupBy("articles.article_id")
+    .orderBy(sort_by || "created_at", order || "desc")
+    .modify(query => {
+      if (author) query.where("articles.author", author);
+    })
+    .modify(query => {
+      if (topic) query.where("articles.topic", topic);
+    })
+    .then(articles => {
+      return articles.map(article => {
+        article.comment_count = +article.comment_count;
+        const { body, ...restOfArticleData } = article;
+        return restOfArticleData;
+      });
+    });
 };

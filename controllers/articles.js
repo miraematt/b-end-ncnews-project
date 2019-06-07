@@ -2,7 +2,8 @@ const {
   fetchArticleById,
   updateArticlePoints,
   insertComment,
-  fetchCommentsByArticle
+  fetchCommentsByArticle,
+  fetchAllArticles
 } = require("../models/articles");
 
 exports.sendArticleById = (req, res, next) => {
@@ -55,7 +56,6 @@ exports.postCommentOnArticle = (req, res, next) => {
 };
 
 exports.sendCommentsByArticle = (req, res, next) => {
-  // res.send("All okay from article router ");
   const { article_id } = req.params;
   fetchCommentsByArticle(article_id, req.query)
     .then(comments => {
@@ -66,7 +66,55 @@ exports.sendCommentsByArticle = (req, res, next) => {
           msg: "No comments found for this article id"
         });
       }
+      if (req.query.sort_by === "" || req.query.order === "") {
+        return Promise.reject({
+          status: 400,
+          msg:
+            "Sort property or order property have been chosen but invalid values have been given"
+        });
+      }
+      const orderValues = ["asc", "desc"];
+      if (req.query.order) {
+        if (!orderValues.includes(req.query.order)) {
+          return Promise.reject({
+            status: 400,
+            msg:
+              "Sort property or order property have been chosen but invalid values have been given"
+          });
+        }
+      }
       res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
+exports.sendAllArticles = (req, res, next) => {
+  fetchAllArticles(req.query)
+    .then(articles => {
+      // if (!article) {
+      //   return Promise.reject({
+      //     status: 404,
+      //     msg: "No article found for this article id"
+      //   });
+      // }
+      if (req.query.sort_by === "" || req.query.order === "") {
+        return Promise.reject({
+          status: 400,
+          msg:
+            "Sort property or order property have been chosen but invalid values have been given"
+        });
+      }
+      const orderValues = ["asc", "desc"];
+      if (req.query.order) {
+        if (!orderValues.includes(req.query.order)) {
+          return Promise.reject({
+            status: 400,
+            msg:
+              "Sort property or order property have been chosen but invalid values have been given"
+          });
+        }
+      }
+      res.status(200).send({ articles });
     })
     .catch(next);
 };

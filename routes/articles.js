@@ -4,9 +4,15 @@ const {
   sendArticleById,
   patchArticleById,
   postCommentOnArticle,
-  sendCommentsByArticle
+  sendCommentsByArticle,
+  sendAllArticles
 } = require("../controllers/articles");
 const { methodNotAllowed } = require("../errors");
+
+articlesRouter
+  .route("/")
+  .get(sendAllArticles)
+  .all(methodNotAllowed);
 
 articlesRouter
   .route("/:article_id")
