@@ -471,6 +471,80 @@ describe.only("/", () => {
               }
             }
             expect(body.articles.length).to.equal(count);
+            // need to do tests for filtering
+          });
+      });
+    });
+
+    describe("/comments/:comment_id", () => {
+      it("PATCH status:200 it responds with a comment object that has the correct properties including an updated vote count when given an increment vote object as input", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment).to.eql({
+              article_id: 9,
+              comment_id: 1,
+              body:
+                "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              votes: 17,
+              author: "butter_bridge",
+              created_at: "2017-11-22T12:36:03.389Z"
+            });
+          });
+      });
+      it("PATCH status:200 it responds when given a negative increment vote object as input", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: -1 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment).to.eql({
+              article_id: 9,
+              comment_id: 1,
+              body:
+                "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              votes: 15,
+              author: "butter_bridge",
+              created_at: "2017-11-22T12:36:03.389Z"
+            });
+          });
+      });
+      it("POST status:405 Method Not Allowed for all methods that we cannot use", () => {
+        return request(app)
+          .post("/api/comments/1")
+          .send({ inc_votes: 1 })
+          .expect(405)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Method Not Allowed");
+          });
+      });
+      it("PATCH status:404 Not Found for comment_id that does not exist", () => {
+        return request(app)
+          .patch("/api/comments/1234567890")
+          .send({ inc_votes: 1 })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("No comment found for this comment id");
+          });
+      });
+      it("PATCH status:400 Bad Request for invalid increment", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: "yes" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad Request");
+          });
+      });
+      it("PATCH status:400 Bad Request for article_id that is not a positive integer", () => {
+        return request(app)
+          .patch("/api/articles/hello")
+          .send({ inc_votes: 1 })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad Request");
           });
       });
     });
