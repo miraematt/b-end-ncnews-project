@@ -10,7 +10,7 @@ chai.use(chaiSorted);
 const app = require("../app");
 const connection = require("../db/connection");
 
-describe.only("/", () => {
+describe("/", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
 
@@ -180,13 +180,15 @@ describe.only("/", () => {
             expect(body.msg).to.equal("No article found for this article id");
           });
       });
-      it("PATCH status:404 Not Found for invalid increment", () => {
+      it("PATCH status:400 Bad Request for invalid increment", () => {
         return request(app)
           .patch("/api/articles/1")
           .send({ inc_votes: "yes" })
-          .expect(404)
+          .expect(400)
           .then(({ body }) => {
-            expect(body.msg).to.equal("Increment should be a number");
+            expect(body.msg).to.equal(
+              "Bad Request - Increment should be a number"
+            );
           });
       });
       it("PATCH status:400 Bad Request for article_id that is not a positive integer", () => {
@@ -277,9 +279,15 @@ describe.only("/", () => {
             .get("/api/articles/1234567890/comments")
             .expect(404)
             .then(({ body }) => {
-              expect(body.msg).to.equal(
-                "No comments found for this article id"
-              );
+              expect(body.msg).to.equal("No article found for this article id");
+            });
+        });
+        it("GET status:200 Returns an empty array for an article with no comments", () => {
+          return request(app)
+            .get("/api/articles/7/comments")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.eql([]);
             });
         });
         it("GET status:400 Bad Request for article_id that is not a positive integer", () => {
@@ -472,6 +480,22 @@ describe.only("/", () => {
             }
             expect(body.articles.length).to.equal(count);
             // need to do tests for filtering
+          });
+      });
+      it("GET status:404 Not Found for topic that does not exist", () => {
+        return request(app)
+          .get("/api/articles?topic=notATopic")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("There are no matches for this topic");
+          });
+      });
+      it("GET status:404 Not Found for author that does not exist", () => {
+        return request(app)
+          .get("/api/articles?author=notAnAuthor")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("There are no matches for this author");
           });
       });
     });

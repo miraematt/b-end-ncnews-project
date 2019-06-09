@@ -34,8 +34,8 @@ exports.patchArticleById = (req, res, next) => {
       }
       if (typeof increment != "number" && increment) {
         return Promise.reject({
-          status: 404,
-          msg: "Increment should be a number"
+          status: 400,
+          msg: "Bad Request - Increment should be a number"
         });
       }
 
@@ -60,12 +60,12 @@ exports.sendCommentsByArticle = (req, res, next) => {
   fetchCommentsByArticle(article_id, req.query)
     .then(comments => {
       comments.map(comment => delete comment.article_id);
-      if (comments.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "No comments found for this article id"
-        });
-      }
+      // if (comments.length === 0) {
+      //   return Promise.reject({
+      //     status: 404,
+      //     msg: "No article found for this article id"
+      //   });
+      // }
       if (req.query.sort_by === "" || req.query.order === "") {
         return Promise.reject({
           status: 400,
@@ -97,11 +97,27 @@ exports.sendAllArticles = (req, res, next) => {
       //     msg: "No article found for this article id"
       //   });
       // }
+      console.log(req.query);
+      console.log(articles);
+      console.log(req.query.author);
+      console.log(req.query.topic);
       if (req.query.sort_by === "" || req.query.order === "") {
         return Promise.reject({
           status: 400,
           msg:
             "Sort property or order property have been chosen but invalid values have been given"
+        });
+      }
+      if (articles.length === 0 && req.query.topic) {
+        return Promise.reject({
+          status: 404,
+          msg: "There are no matches for this topic"
+        });
+      }
+      if (articles.length === 0 && req.query.author) {
+        return Promise.reject({
+          status: 404,
+          msg: "There are no matches for this author"
         });
       }
       const orderValues = ["asc", "desc"];

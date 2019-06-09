@@ -8,7 +8,6 @@ exports.updateCommentVotes = (comment_id, increment) => {
 };
 
 exports.removeCommentById = comment => {
-  console.log(comment);
   return connection("comments")
     .where("comment_id", comment)
     .del();
