@@ -46,8 +46,10 @@ exports.patchArticleById = (req, res, next) => {
 
 exports.postCommentOnArticle = (req, res, next) => {
   const { username, body } = req.body;
-  const { article_id } = req.params;
+  if (!username || !body)
+    res.status(400).send({ msg: "Username or comment is missing" });
 
+  const { article_id } = req.params;
   insertComment({ username, body, article_id })
     .then(([comment]) => {
       res.status(201).send({ comment });
@@ -57,35 +59,62 @@ exports.postCommentOnArticle = (req, res, next) => {
 
 exports.sendCommentsByArticle = (req, res, next) => {
   const { article_id } = req.params;
-  fetchCommentsByArticle(article_id, req.query)
-    .then(comments => {
-      comments.map(comment => delete comment.article_id);
-      // if (comments.length === 0) {
-      //   return Promise.reject({
-      //     status: 404,
-      //     msg: "No article found for this article id"
-      //   });
-      // }
-      if (req.query.sort_by === "" || req.query.order === "") {
+  fetchArticleById(article_id)
+    .then(article => {
+      if (article.length === 0) {
         return Promise.reject({
-          status: 400,
-          msg:
-            "Sort property or order property have been chosen but invalid values have been given"
+          status: 404,
+          msg: "No article found for this article id"
         });
       }
-      const orderValues = ["asc", "desc"];
-      if (req.query.order) {
-        if (!orderValues.includes(req.query.order)) {
-          return Promise.reject({
-            status: 400,
-            msg:
-              "Sort property or order property have been chosen but invalid values have been given"
-          });
-        }
-      }
-      res.status(200).send({ comments });
+      fetchCommentsByArticle(article_id, req.query)
+        .then(comments => {
+          comments.map(comment => delete comment.article_id);
+          if (req.query.sort_by === "" || req.query.order === "") {
+            return Promise.reject({
+              status: 400,
+              msg:
+                "Sort property or order property have been chosen but invalid values have been given"
+            });
+          }
+          const orderValues = ["asc", "desc"];
+          if (req.query.order) {
+            if (!orderValues.includes(req.query.order)) {
+              return Promise.reject({
+                status: 400,
+                msg:
+                  "Sort property or order property have been chosen but invalid values have been given"
+              });
+            }
+          }
+          res.status(200).send({ comments });
+        })
+        .catch(next);
     })
     .catch(next);
+  // fetchCommentsByArticle(article_id, req.query)
+  //   .then(comments => {
+  //     comments.map(comment => delete comment.article_id);
+  //     if (req.query.sort_by === "" || req.query.order === "") {
+  //       return Promise.reject({
+  //         status: 400,
+  //         msg:
+  //           "Sort property or order property have been chosen but invalid values have been given"
+  //       });
+  //     }
+  //     const orderValues = ["asc", "desc"];
+  //     if (req.query.order) {
+  //       if (!orderValues.includes(req.query.order)) {
+  //         return Promise.reject({
+  //           status: 400,
+  //           msg:
+  //             "Sort property or order property have been chosen but invalid values have been given"
+  //         });
+  //       }
+  //     }
+  //     res.status(200).send({ comments });
+  //   })
+  //   .catch(next);
 };
 
 exports.sendAllArticles = (req, res, next) => {
@@ -97,10 +126,6 @@ exports.sendAllArticles = (req, res, next) => {
       //     msg: "No article found for this article id"
       //   });
       // }
-      console.log(req.query);
-      console.log(articles);
-      console.log(req.query.author);
-      console.log(req.query.topic);
       if (req.query.sort_by === "" || req.query.order === "") {
         return Promise.reject({
           status: 400,

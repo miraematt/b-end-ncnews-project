@@ -162,6 +162,24 @@ describe("/", () => {
             });
           });
       });
+      it("PATCH status:200 it responds with the article when given a patch request with no body", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({})
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article).to.eql({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z",
+              comment_count: 13
+            });
+          });
+      });
       it("POST status:405 Method Not Allowed for all methods that we cannot use", () => {
         return request(app)
           .post("/api/articles/1")
@@ -236,6 +254,15 @@ describe("/", () => {
             .expect(400)
             .then(({ body }) => {
               expect(body.msg).to.equal("Bad Request");
+            });
+        });
+        it("POST status:400 Bad Request for request body that doesn't include the correct keys", () => {
+          return request(app)
+            .post("/api/articles/1/comments")
+            .send({ username: "butter_bridge" })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Username or comment is missing");
             });
         });
         it("PATCH status:405 Method Not Allowed for all methods that we cannot use", () => {
