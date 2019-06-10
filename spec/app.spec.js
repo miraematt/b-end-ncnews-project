@@ -15,12 +15,23 @@ describe("/", () => {
   after(() => connection.destroy());
 
   describe("/api", () => {
-    it("GET status:200", () => {
+    it("GET status:200 returns a JSON representation of all the available endpoints of the api", () => {
       return request(app)
         .get("/api")
         .expect(200)
         .then(({ body }) => {
-          expect(body.ok).to.equal(true);
+          expect(body).to.contain.keys(
+            "GET /api",
+            "GET /api/topics",
+            "GET /api/articles",
+            "GET /api/users/:username",
+            "GET /api/articles/:article_id",
+            "PATCH /api/articles/:article_id",
+            "POST /api/articles/:article_id/comments",
+            "GET /api/articles/:article_id/comments",
+            "PATCH /api/comments/:comment_id",
+            "DELETE /api/comments/:comment_id"
+          );
         });
     });
     it("POST status:405 Method Not Allowed for all methods that we cannot use", () => {
@@ -614,32 +625,6 @@ describe("/", () => {
             expect(body.msg).to.equal("Method Not Allowed");
           });
       });
-      // it("DELETE status:404 Not Found for comment_id that does not exist", () => {
-      //   return request(app)
-      //     .delete("/api/comments/1234567890")
-      //     .expect(404)
-      //     .then(({ body }) => {
-      //       expect(body.msg).to.equal("No comment found for this comment id");
-      //     });
-      // });
-      // it("PATCH status:400 Bad Request for invalid increment", () => {
-      //   return request(app)
-      //     .patch("/api/comments/1")
-      //     .send({ inc_votes: "yes" })
-      //     .expect(400)
-      //     .then(({ body }) => {
-      //       expect(body.msg).to.equal("Bad Request");
-      //     });
-      // });
-      // it("PATCH status:400 Bad Request for article_id that is not a positive integer", () => {
-      //   return request(app)
-      //     .patch("/api/articles/hello")
-      //     .send({ inc_votes: 1 })
-      //     .expect(400)
-      //     .then(({ body }) => {
-      //       expect(body.msg).to.equal("Bad Request");
-      //     });
-      // });
     });
   });
 });

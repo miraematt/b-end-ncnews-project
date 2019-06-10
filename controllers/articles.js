@@ -24,7 +24,6 @@ exports.sendArticleById = (req, res, next) => {
 exports.patchArticleById = (req, res, next) => {
   let increment = req.body.inc_votes;
   if (!req.body.inc_votes) increment = 0;
-
   const { article_id } = req.params;
 
   updateArticlePoints(article_id, increment)
@@ -95,40 +94,11 @@ exports.sendCommentsByArticle = (req, res, next) => {
         .catch(next);
     })
     .catch(next);
-  // fetchCommentsByArticle(article_id, req.query)
-  //   .then(comments => {
-  //     comments.map(comment => delete comment.article_id);
-  //     if (req.query.sort_by === "" || req.query.order === "") {
-  //       return Promise.reject({
-  //         status: 400,
-  //         msg:
-  //           "Sort property or order property have been chosen but invalid values have been given"
-  //       });
-  //     }
-  //     const orderValues = ["asc", "desc"];
-  //     if (req.query.order) {
-  //       if (!orderValues.includes(req.query.order)) {
-  //         return Promise.reject({
-  //           status: 400,
-  //           msg:
-  //             "Sort property or order property have been chosen but invalid values have been given"
-  //         });
-  //       }
-  //     }
-  //     res.status(200).send({ comments });
-  //   })
-  //   .catch(next);
 };
 
 exports.sendAllArticles = (req, res, next) => {
   fetchAllArticles(req.query)
     .then(articles => {
-      // if (!article) {
-      //   return Promise.reject({
-      //     status: 404,
-      //     msg: "No article found for this article id"
-      //   });
-      // }
       if (req.query.sort_by === "" || req.query.order === "") {
         return Promise.reject({
           status: 400,
