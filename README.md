@@ -90,4 +90,6 @@ The tests in the app.spec.js file are to ensure that each endpoint of the API re
 
 ## Deployment
 
-This project will be deployed on heroku website.
+This project is deployed on the heroku platform.
+
+https://mattsncnewsproject.herokuapp.com/api/
