@@ -1,7 +1,12 @@
 const express = require("express");
 const usersRouter = express.Router();
-const { sendUserById } = require("../controllers/users");
+const { sendUserById, sendAllUsers } = require("../controllers/users");
 const { methodNotAllowed } = require("../errors");
+
+usersRouter
+  .route("/")
+  .get(sendAllUsers)
+  .all(methodNotAllowed);
 
 usersRouter
   .route("/:username")

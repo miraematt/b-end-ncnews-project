@@ -61,35 +61,60 @@ describe("/", () => {
           });
       });
     });
-    describe("/users/:username", () => {
-      it("GET status:200 it responds with a user object that has the correct properties", () => {
+    // more testing required for user endpoint queries
+    describe.only("/users", () => {
+      it("GET status:200 it responds with an array of users, each user having the correct properties", () => {
         return request(app)
-          .get("/api/users/butter_bridge")
+          .get("/api/users")
           .expect(200)
           .then(({ body }) => {
-            expect(body.user).to.eql({
-              username: "butter_bridge",
-              name: "jonny",
-              avatar_url:
-                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-            });
+            expect(body.users).to.be.an("array");
+            expect(body.users[0]).to.contain.keys(
+              "name",
+              "avatar_url",
+              "username"
+            );
           });
       });
       it("POST status:405 Method Not Allowed for all methods that we cannot use", () => {
         return request(app)
-          .post("/api/users/butter_bridge")
+          .post("/api/users")
           .expect(405)
           .then(({ body }) => {
             expect(body.msg).to.equal("Method Not Allowed");
           });
       });
-      it("GET status:404 Not Found for username that does not exist", () => {
-        return request(app)
-          .get("/api/users/mattyboy")
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).to.equal("No user found for this username");
-          });
+
+      describe("/users/:username", () => {
+        it("GET status:200 it responds with a user object that has the correct properties", () => {
+          return request(app)
+            .get("/api/users/butter_bridge")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.user).to.eql({
+                username: "butter_bridge",
+                name: "jonny",
+                avatar_url:
+                  "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+              });
+            });
+        });
+        it("POST status:405 Method Not Allowed for all methods that we cannot use", () => {
+          return request(app)
+            .post("/api/users/butter_bridge")
+            .expect(405)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Method Not Allowed");
+            });
+        });
+        it("GET status:404 Not Found for username that does not exist", () => {
+          return request(app)
+            .get("/api/users/mattyboy")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("No user found for this username");
+            });
+        });
       });
     });
     describe("/articles/:article_id", () => {
@@ -435,6 +460,7 @@ describe("/", () => {
             expect(body.articles).to.be.descendingBy("created_at");
           });
       });
+
       it("GET status 200 comments are sorted by any column when passed a valid column as a url sort_by query", () => {
         return request(app)
           .get("/api/articles?sort_by=votes")
@@ -469,7 +495,7 @@ describe("/", () => {
             );
           });
       });
-      it("GET status:400 Bad Request for sort_by query that is empty", () => {
+      it("GET status:400 Bad Request for order query that is empty", () => {
         return request(app)
           .get("/api/articles?sort_by=votes&order=")
           .expect(400)
