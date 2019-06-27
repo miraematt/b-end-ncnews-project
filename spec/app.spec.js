@@ -62,7 +62,7 @@ describe("/", () => {
       });
     });
     // more testing required for user endpoint queries
-    describe.only("/users", () => {
+    describe("/users", () => {
       it("GET status:200 it responds with an array of users, each user having the correct properties", () => {
         return request(app)
           .get("/api/users")
@@ -175,8 +175,7 @@ describe("/", () => {
               votes: 101,
               topic: "mitch",
               author: "butter_bridge",
-              created_at: "2018-11-15T12:21:54.171Z",
-              comment_count: 13
+              created_at: "2018-11-15T12:21:54.171Z"
             });
           });
       });
@@ -193,8 +192,7 @@ describe("/", () => {
               votes: 99,
               topic: "mitch",
               author: "butter_bridge",
-              created_at: "2018-11-15T12:21:54.171Z",
-              comment_count: 13
+              created_at: "2018-11-15T12:21:54.171Z"
             });
           });
       });
@@ -211,8 +209,7 @@ describe("/", () => {
               votes: 100,
               topic: "mitch",
               author: "butter_bridge",
-              created_at: "2018-11-15T12:21:54.171Z",
-              comment_count: 13
+              created_at: "2018-11-15T12:21:54.171Z"
             });
           });
       });
@@ -240,9 +237,7 @@ describe("/", () => {
           .send({ inc_votes: "yes" })
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).to.equal(
-              "Bad Request - Increment should be a number"
-            );
+            expect(body.msg).to.equal("Bad Request");
           });
       });
       it("PATCH status:400 Bad Request for article_id that is not a positive integer", () => {

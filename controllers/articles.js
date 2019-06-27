@@ -25,7 +25,6 @@ exports.patchArticleById = (req, res, next) => {
   let increment = req.body.inc_votes;
   if (!req.body.inc_votes) increment = 0;
   const { article_id } = req.params;
-
   updateArticlePoints(article_id, increment)
     .then(([article]) => {
       if (!article) {
@@ -34,6 +33,7 @@ exports.patchArticleById = (req, res, next) => {
           msg: "No article found for this article id"
         });
       }
+
       if (typeof increment != "number" && increment) {
         return Promise.reject({
           status: 400,
