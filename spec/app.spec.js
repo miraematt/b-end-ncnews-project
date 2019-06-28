@@ -632,7 +632,7 @@ describe("/", () => {
       });
     });
     describe("/comments/:comment_id", () => {
-      it("DELETE status:204 it deletes the requested house", () => {
+      it("DELETE status:204 it deletes the requested comment", () => {
         return request(app)
           .delete("/api/comments/1")
           .expect(204);
@@ -731,6 +731,22 @@ describe("/", () => {
               slug: "cats",
               title: "philosophy"
             })
+            .expect(405)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Method Not Allowed");
+            });
+        });
+      });
+      describe.only("/articles", () => {
+        it("DELETE status:204 it deletes the requested article", () => {
+          return request(app)
+            .delete("/api/articles/1")
+            .expect(204);
+        });
+
+        it("POST status:405 Method Not Allowed for all methods that we cannot use", () => {
+          return request(app)
+            .post("/api/articles/1")
             .expect(405)
             .then(({ body }) => {
               expect(body.msg).to.equal("Method Not Allowed");

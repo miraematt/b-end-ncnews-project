@@ -70,3 +70,9 @@ exports.fetchAllArticles = ({ sort_by, order, author, topic }) => {
       });
     });
 };
+
+exports.removeArticleById = article_id => {
+  return connection("articles")
+    .where("article_id", article_id)
+    .del();
+};

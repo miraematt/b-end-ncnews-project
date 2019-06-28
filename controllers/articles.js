@@ -4,7 +4,8 @@ const {
   insertComment,
   fetchCommentsByArticle,
   fetchAllArticles,
-  insertArticle
+  insertArticle,
+  removeArticleById
 } = require("../models/articles");
 
 exports.sendArticleById = (req, res, next) => {
@@ -143,4 +144,13 @@ exports.sendAllArticles = (req, res, next) => {
       res.status(200).send({ articles });
     })
     .catch(next);
+};
+
+exports.deleteArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  removeArticleById(article_id).then(deleteCount => {
+    if (deleteCount === 1) res.sendStatus(204);
+    else if (deleteCount === 0)
+      return Promise.reject({ status: 404, msg: "Comment ID not found" });
+  });
 };
