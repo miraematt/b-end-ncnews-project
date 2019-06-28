@@ -153,5 +153,10 @@
         }
       ]
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes the given article",
+    "queries": {},
+    "exampleResponse": {}
   }
 }
