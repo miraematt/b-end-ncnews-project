@@ -3,7 +3,8 @@ const {
   updateArticlePoints,
   insertComment,
   fetchCommentsByArticle,
-  fetchAllArticles
+  fetchAllArticles,
+  insertArticle
 } = require("../models/articles");
 
 exports.sendArticleById = (req, res, next) => {
@@ -55,6 +56,17 @@ exports.postCommentOnArticle = (req, res, next) => {
   insertComment({ username, body, article_id })
     .then(([comment]) => {
       res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.postNewArticle = (req, res, next) => {
+  const { username, body, slug, title } = req.body;
+  if (!title || !slug || !body)
+    res.status(400).send({ msg: "Username or comment is missing" });
+  insertArticle({ username, body, slug, title })
+    .then(([article]) => {
+      res.status(201).send({ article });
     })
     .catch(next);
 };

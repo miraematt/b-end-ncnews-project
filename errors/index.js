@@ -11,7 +11,6 @@ exports.methodNotAllowed = (req, res) => {
 };
 
 exports.handle500 = (err, req, res, next) => {
-  console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
 };
 
@@ -21,7 +20,7 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handlePsqlErrors = (err, req, res, next) => {
-  const psqlBadRequestCodes = ["22P02", "23503", "42703"];
+  const psqlBadRequestCodes = ["22P02", "23503", "42703", "23502"];
   if (psqlBadRequestCodes.includes(err.code))
     res.status(400).send({ msg: err.msg || "Bad Request" });
   else next(err);

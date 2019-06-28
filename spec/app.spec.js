@@ -439,9 +439,9 @@ describe("/", () => {
             expect(body.articles[0]).to.not.contain.keys("body");
           });
       });
-      it("POST status:405 Method Not Allowed for all methods that we cannot use", () => {
+      it("PATCH status:405 Method Not Allowed for all methods that we cannot use", () => {
         return request(app)
-          .post("/api/articles")
+          .patch("/api/articles")
           .expect(405)
           .then(({ body }) => {
             expect(body.msg).to.equal("Method Not Allowed");
@@ -645,6 +645,97 @@ describe("/", () => {
           .then(({ body }) => {
             expect(body.msg).to.equal("Method Not Allowed");
           });
+      });
+    });
+    describe("/articles/", () => {
+      describe("- POST", () => {
+        it("POST status:201 it responds with a new article object that has the correct properties and that corresponds to the username and body and topic given", () => {
+          return request(app)
+            .post("/api/articles")
+            .send({
+              username: "butter_bridge",
+              body: "I am because I am a Russian Blue",
+              slug: "cats",
+              title: "philosophy"
+            })
+            .expect(201)
+            .then(({ body }) => {
+              const { created_at, ...restOfComments } = body.article;
+              expect(restOfComments).to.eql({
+                author: "butter_bridge",
+                article_id: 13,
+                votes: 0,
+                body: "I am because I am a Russian Blue",
+                topic: "cats",
+                title: "philosophy"
+              });
+            });
+        });
+        it("POST status:400 Bad Request for username that does not exist", () => {
+          return request(app)
+            .post("/api/articles/")
+            .send({
+              username: "mattyboy",
+              body: "I am because I am a Russian Blue",
+              slug: "cats",
+              title: "philosophy"
+            })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Bad Request");
+            });
+        });
+        it("POST status:400 Bad Request for topic that is not in the topics table", () => {
+          return request(app)
+            .post("/api/articles")
+            .send({
+              username: "butter_bridge",
+              body: "I am because I am a Russian Blue",
+              slug: "countries",
+              title: "philosophy"
+            })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Bad Request");
+            });
+        });
+        it("POST status:400 Bad Request for request body that doesn't include the correct keys", () => {
+          return request(app)
+            .post("/api/articles")
+            .send({ username: "butter_bridge" })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Username or comment is missing");
+            });
+        });
+        it("POST status:400 Bad Request for request body that has null values for either title or body", () => {
+          return request(app)
+            .post("/api/articles")
+            .send({
+              username: "butter_bridge",
+              body: "",
+              slug: "cats",
+              title: "philosophy"
+            })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Username or comment is missing");
+            });
+        });
+        it("PATCH status:405 Method Not Allowed for all methods that we cannot use", () => {
+          return request(app)
+            .patch("/api/articles")
+            .send({
+              username: "butter_bridge",
+              body: "I am because I am a Russian Blue",
+              slug: "cats",
+              title: "philosophy"
+            })
+            .expect(405)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Method Not Allowed");
+            });
+        });
       });
     });
   });

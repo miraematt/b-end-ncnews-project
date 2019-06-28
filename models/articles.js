@@ -17,7 +17,6 @@ exports.fetchArticleById = article_id => {
 };
 
 exports.updateArticlePoints = (article_id, increment) => {
-  console.log(article_id, increment);
   return connection("articles")
     .where("article_id", article_id)
     .increment("votes", increment)
@@ -29,6 +28,16 @@ exports.insertComment = comment => {
   delete comment.username;
   return connection("comments")
     .insert(comment)
+    .returning("*");
+};
+
+exports.insertArticle = article => {
+  article.author = article.username;
+  article.topic = article.slug;
+  delete article.username;
+  delete article.slug;
+  return connection("articles")
+    .insert(article)
     .returning("*");
 };
 
