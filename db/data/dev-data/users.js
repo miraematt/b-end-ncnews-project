@@ -3,12 +3,13 @@ module.exports = [
     username: "tickle122",
     name: "Tom Tickle",
     avatar_url:
-      "https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg"
+      "https://i1.wp.com/metro.co.uk/wp-content/uploads/2014/03/wpid-article-1312912102057-0d5dc73100000578-807569_636x482.jpg?quality=90&strip=all&zoom=1&resize=540%2C409"
   },
   {
     username: "grumpy19",
     name: "Paul Grump",
-    avatar_url: "https://www.tumbit.com/profile-image/4/original/mr-grumpy.jpg"
+    avatar_url:
+      "https://www.jasondale.co.uk/wp-content/uploads/2017/02/characterpic-square-mrgrumpy.jpg"
   },
   {
     username: "happyamy2016",
@@ -19,13 +20,14 @@ module.exports = [
   {
     username: "cooljmessy",
     name: "Peter Messy",
-    avatar_url: "https://i.imgur.com/WfX0Neu.jpg"
+    avatar_url:
+      "https://cdacd69451cbgvt.belugacdn.link/uploads/monthly_2018_06/73A77107-8FC5-4E46-96EA-DA57C2B21E46.png.64fdee30e420bc7dd16ccef87e6fb37f.png"
   },
   {
     username: "weegembump",
     name: "Gemma Bump",
     avatar_url:
-      "https://www.upandrunning.co.uk/media/catalog/product/cache/1/image/650x/040ec09b1e35df139433887a97daa66f/m/r/mr-bump.jpg"
+      "https://cdn.shopify.com/s/files/1/0194/0815/8819/t/2/assets/cp-square-mr-bump.jpg?21857"
   },
   {
     username: "jessjelly",
