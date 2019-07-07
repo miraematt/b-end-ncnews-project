@@ -1,6 +1,6 @@
 # NorthCoders News API Project
 
-The aim of this project is to build the API to use in the Northcoders News Sprint during the subsequent Front-End block of the NorthCoders course. The database is in PSQL and I have interacted with it using Knex. The seeding of the database was achieved using full TDD with mocha and chai and the endpoints were created using test-driven error handling with the aid of supertest.
+The aim of this project is to build the API to use in the Northcoders News Sprint during the subsequent Front-End block of the NorthCoders course. The database is PSQL and I have interacted with it using Knex. The seeding of the database was achieved using full TDD with mocha and chai and the endpoints were created using test-driven error handling with the aid of supertest.
 
 ## Getting Started (for testing purposes)
 
@@ -55,13 +55,13 @@ const customConfigs = {
 module.exports = { ...baseConfig, ...customConfigs[ENV] };
 ```
 
-Open the project on local host which can be viewed using Insomnia while not yet hosted.
-
 ```
 npm start
 ```
 
-or by using nodemon:
+Open the project on http://localhost:9090/api which can also be viewed using Insomnia (https://insomnia.rest/).
+
+You can also use nodemon for automatic reloads:
 
 ```
 npm install nodemon
