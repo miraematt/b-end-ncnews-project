@@ -1,0 +1,67 @@
+version: "3.7"
+services:
+  web:
+    build: .
+    ports:
+      - "9090:9090"
+    networks:
+      - ncnews
+  networks:
+    ncnews:
+    # this maps the ports so that docker forwards the traffic from localhost to container
+    # volumes:
+    #   - "./connection.js:/usr/app/connection.js"
+    # this copies the connection.js server to the container
+    # environment:
+    #   - DB_HOST=postgres
+    #   - DB_USER=postgres
+    #   - DB_NAME=docker-db
+    depends_on:
+      # this just guarantees that the process it depends on has started, not necessarily finished
+      - db
+    # environment:
+    #   - REDIS_HOST=server
+    # - REDIS_URL=redis://server
+    # can use either of these to find the environment. Stick with the first one for simplicity
+  db:
+    image: postgres
+    networks:
+      - ncnews
+    ports:
+      - "5432:5432"
+    volumes:
+      - .pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ncnews
+      # this environment variable will create a database if it doesn't exist when we start the container environment
+  # server:
+  #   image: redis:alpine
+  #   volumes:
+  #     - redis-data:/data
+  # the colon here maps the data to a new destination -look at the redis docs to find out where to map it to!
+  # longhand would be:
+  # - type=mount
+  #   source=redis-data
+  #   destination=/data
+  # ports:
+  #   - 6379:6379
+# volumes:
+#   redis-data:
+# services:
+#   web:
+#     build: .
+#     command: npm run dev
+#     volumes:
+#       - .:/usr/app/
+#       - /usr/app/node_modules
+#     ports:
+#       - "3000:3000"
+#     depends_on:
+#       - postgres
+#     environment:
+#       DATABASE_URL: postgres://todoapp@postgres/todos
+#   postgres:
+#     image: postgres:9.6.2-alpine
+#     environment:
+#       POSTGRES_USER: todoapp
+#       POSTGRES_DB: todos
